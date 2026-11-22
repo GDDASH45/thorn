@@ -33,7 +33,7 @@ class ImageReport:
     image_size: int
     boot_signature_valid: bool
     stage1_size: int
-    stage2_size: int
+    stage2_nonzero_bytes: int
     stage2_capacity: int
     trailing_bytes: int
 
@@ -42,7 +42,6 @@ class ImageReport:
         return (
             self.boot_signature_valid
             and self.stage1_size == STAGE1_SIZE
-            and self.stage2_size <= self.stage2_capacity
             and self.image_size == IMAGE_SIZE
         )
 
@@ -52,7 +51,7 @@ class ImageReport:
             "image_size": self.image_size,
             "boot_signature_valid": self.boot_signature_valid,
             "stage1_size": self.stage1_size,
-            "stage2_size": self.stage2_size,
+            "stage2_nonzero_bytes": self.stage2_nonzero_bytes,
             "stage2_capacity": self.stage2_capacity,
             "trailing_bytes": self.trailing_bytes,
             "valid": self.valid,
@@ -94,7 +93,7 @@ def inspect_image(source: Path | str | bytes | bytearray) -> ImageReport:
         image_size=len(data),
         boot_signature_valid=signature,
         stage1_size=len(stage1),
-        stage2_size=len(stage2),
+        stage2_nonzero_bytes=sum(byte != 0 for byte in stage2_area),
         stage2_capacity=STAGE2_CAPACITY,
         trailing_bytes=max(0, len(data) - IMAGE_SIZE),
     )
@@ -111,11 +110,6 @@ def validate_image(source: Path | str | bytes | bytearray) -> ImageReport:
         problems.append(
             f"image is {report.image_size} bytes; expected exactly {IMAGE_SIZE}"
         )
-    if report.stage2_size > STAGE2_CAPACITY:
-        problems.append(
-            f"Stage 2 exceeds capacity ({report.stage2_size} > "
-            f"{STAGE2_CAPACITY})"
-        )
     if problems:
         raise ImageError("; ".join(problems))
     return report
@@ -131,7 +125,7 @@ def format_report(report: ImageReport) -> str:
         f"Stage 1: {report.stage1_size} bytes",
         f"Boot signature: {'valid' if report.boot_signature_valid else 'invalid'}",
         f"Stage 2 capacity: {report.stage2_capacity} bytes",
-        f"Detected Stage 2 data: {report.stage2_size} bytes",
+        f"Non-zero bytes in Stage 2 area: {report.stage2_nonzero_bytes}",
     ]
     if report.trailing_bytes:
         lines.append(f"Bytes beyond image layout: {report.trailing_bytes}")

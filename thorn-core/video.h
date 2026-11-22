@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef THORN_VIDEO_H
 #define THORN_VIDEO_H
 

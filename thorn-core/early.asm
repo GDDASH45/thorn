@@ -1,7 +1,8 @@
 BITS 32
 
-section .text
+section .text.entry
 global early_entry
+extern thorn_main
 
 early_entry:
     cli

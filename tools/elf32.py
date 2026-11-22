@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Small, defensive ELF32 reader for host-side Thorn image analysis.
 
 The parser is deliberately limited to ELF32 little-endian i386 executables.

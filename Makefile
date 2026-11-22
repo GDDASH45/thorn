@@ -16,7 +16,7 @@ CFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin -MMD -
 ASFLAGS := --32
 LDFLAGS := -m elf_i386
 
-SRC_C   := thorn-core/main.c thorn-core/video.c
+SRC_C   := thorn-core/main.c thorn-core/video.c thorn-core/err.c
 SRC_AS  := thorn-core/early.asm thorn-core/handoff.asm
 
 OBJ_C   := $(SRC_C:.c=.o)

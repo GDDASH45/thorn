@@ -32,9 +32,14 @@ STAGE2      := build/stage2.bin
 BIOS_IMG    := build/boot-bios.img
 VER_HEADER  := include/generated/version.h
 
-.PHONY: all test clean
+TBP_BIN := build/tbp.bin
+TBP_MOD := build/tbp.mod
+
+.PHONY: all modules test clean
 
 all: $(BIOS_IMG)
+
+modules: $(TBP_MOD)
 
 test:
 	@echo "  TEST    host-side validation suite"
@@ -49,15 +54,15 @@ $(STAGE1): thorn-core/stage1.asm
 $(VER_HEADER):
 	@mkdir -p $(dir $@)
 	@echo "  GEN     $@"
-	@printf '%s\n' \
-		'#ifndef VERSION_H' \
-		'#define VERSION_H' \
-		'' \
-		'#define THORN_VERSION "$(VERSION)"' \
-		'#define THORN_VERSION_MAJOR $(VERSION_MAJOR)' \
-		'#define THORN_VERSION_MINOR $(VERSION_MINOR)' \
-		'#define THORN_VERSION_PATCH $(VERSION_PATCH)' \
-		'' \
+	@printf '%s\\n' \\
+		'#ifndef VERSION_H' \\
+		'#define VERSION_H' \\
+		'' \\
+		'#define THORN_VERSION "$(VERSION)"' \\
+		'#define THORN_VERSION_MAJOR $(VERSION_MAJOR)' \\
+		'#define THORN_VERSION_MINOR $(VERSION_MINOR)' \\
+		'#define THORN_VERSION_PATCH $(VERSION_PATCH)' \\
+		'' \\
 		'#endif' > $@
 
 $(OBJ_C): $(VER_HEADER)
@@ -77,6 +82,15 @@ $(BIOS_IMG): $(STAGE1) $(STAGE2)
 	@cat $(STAGE1) > $@
 	@dd if=$(STAGE2) of=$@ bs=512 seek=1 conv=notrunc status=none
 	@truncate -s 16896 $@
+
+$(TBP_BIN): modules/tbp.asm
+	@mkdir -p $(dir $@)
+	@echo "  NASM    $<"
+	@$(NASM) -f bin $< -o $@
+
+$(TBP_MOD): $(TBP_BIN) tools/pack-mod.py tools/modfile.py
+	@echo "  MOD     $@"
+	@python3 tools/pack-mod.py $(TBP_BIN) $@ --entry-offset 0
 
 %.o: %.c
 	@echo "  CC      $<"

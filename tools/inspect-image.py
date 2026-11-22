@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 #!/usr/bin/env python3
 """Command-line inspector for Thorn BIOS disk images."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 #!/usr/bin/env python3
 """Inspect a 32-bit i386 executable without loading or executing it."""
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Unit tests for the Thorn image inspection helpers."""
 from __future__ import annotations
 

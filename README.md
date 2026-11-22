@@ -62,8 +62,9 @@ Run the Python standard-library test suite:
 make test
 ```
 
-The tests cover image-layout checks, ELF32 structural validation, and TBP
-metadata consistency. They do not emulate BIOS behavior.
+The tests cover image-layout checks, ELF32 structural validation, TBP
+metadata consistency, and the raw `.mod` file format. They do not emulate BIOS
+behavior.
 
 ## Inspection tools
 
@@ -88,6 +89,21 @@ python3 tools/inspect-elf.py build/stage2.elf
 The inspection utilities are host-side tools. The current BIOS loader reads a
 flat binary, not an ELF file.
 
+## Raw module files
+
+Thorn defines a versioned `.mod` container for position-independent raw i386
+machine code. The host-side packer and inspector are documented in
+[docs/module-format.md](docs/module-format.md):
+
+```sh
+python3 tools/pack-mod.py module.bin module.mod --entry-offset 0
+python3 tools/inspect-mod.py module.mod
+```
+
+The format and validation tools are implemented, but Thorn does not yet load
+or execute modules during boot. The `.mod` payload is not an ELF object and
+contains no relocation table.
+
 ## Test with QEMU
 
 ```sh
@@ -103,6 +119,7 @@ halt. Kernel loading is not implemented yet.
 - [Disk and memory layout](docs/disk-layout.md)
 - [Thorn Boot Protocol](docs/boot-protocol.md)
 - [ELF32 inspection utility](docs/elf32-tool.md)
+- [Raw `.mod` module format](docs/module-format.md)
 - [TBP metadata validation](docs/bootinfo-validation.md)
 - [Testing and debugging](docs/testing.md)
 - [Contribution guidelines](docs/contributing.md)

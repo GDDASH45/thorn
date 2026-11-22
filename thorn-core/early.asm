@@ -7,22 +7,21 @@ extern thorn_main
 early_entry:
     cli
 
-    ; Set up the stack
+    ; Stage 1 has already entered 32-bit protected mode.
     mov esp, stack_top
-
-    ; Clear direction flag
     cld
 
-    ; Continue into the C initialization
     call thorn_main
 
 .halt:
+    cli
     hlt
     jmp .halt
 
 section .bss
 align 16
-
 stack_bottom:
     resb 16384
 stack_top:
+
+section .note.GNU-stack noalloc noexec nowrite progbits

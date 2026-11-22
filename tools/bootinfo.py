@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Host-side reader and validator for the Thorn Boot Protocol structure."""
 from __future__ import annotations
 

@@ -131,9 +131,9 @@ class ProgramHeaderTests(unittest.TestCase):
             parse_elf32(bytes(data))
 
     def test_program_header_table_must_fit_file(self) -> None:
-        data = bytearray(build_elf(phoff=0x1F0))
+        data = build_elf(phoff=0x1F0)
         with self.assertRaisesRegex(ELFError, "table extends"):
-            parse_elf32(bytes(data))
+            parse_elf32(data[:-16])
 
     def test_program_header_entry_size_must_be_large_enough(self) -> None:
         data = bytearray(build_elf(phentsize=8))

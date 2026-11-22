@@ -14,6 +14,7 @@
 #define THORN_FLAG_BOOT_DRIVE  (1u << 1)
 #define THORN_FLAG_FRAMEBUFFER (1u << 2)
 #define THORN_FLAG_KERNEL      (1u << 3)
+#define THORN_FLAG_COMMAND_LINE (1u << 4)
 
 /*
  * These are the expected combined flag values once the memory map and boot
@@ -39,6 +40,10 @@ struct thorn_boot_info
     uint32_t framebuffer_height;
     uint32_t framebuffer_pitch;
     uint32_t framebuffer_bpp;
+
+    /* Optional NUL-terminated kernel command line. */
+    uint32_t command_line_address;
+    uint32_t command_line_size;
 };
 
 /* Transfer control to the kernel using the Thorn Boot Protocol. */

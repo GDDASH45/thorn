@@ -1,26 +1,40 @@
 # Thorn Bootloader
 
 Thorn is an experimental x86 BIOS bootloader written in NASM and freestanding C.
+It is designed as a small, inspectable boot path rather than a feature-complete
+operating-system loader.
 
-## Current state
+## Current implementation
 
 The current image contains two stages:
 
-- **Stage 1** is a 512-byte BIOS boot sector. It selects BIOS text mode 3, checks for INT 13h Extensions (EDD), reads 32 sectors from LBA 1, enables A20, loads a GDT, and enters 32-bit protected mode.
-- **Stage 2** is linked to physical address `0x8000`. Its assembly entry establishes a 16 KiB stack and calls `thorn_main()`.
-- **Terminal** writes to the VGA text buffer at `0xB8000`, maintains the hardware cursor, and supports scrolling, newline, carriage return, backspace, and tabs.
-- **Video** currently has a working text-mode fallback. Graphics mode is deliberately unavailable until a real-mode VBE setup path is implemented.
-- **Thorn Boot Protocol (TBP)** defines the kernel handoff registers and boot-information structure. Kernel loading and handoff are not implemented yet.
+- **Stage 1** is a 512-byte BIOS boot sector. It selects BIOS text mode 3,
+  checks for INT 13h Extensions (EDD), reads 32 sectors from LBA 1, enables
+  A20, loads a GDT, and enters 32-bit protected mode.
+- **Stage 2** is linked to physical address `0x8000`. Its assembly entry
+  establishes a 16 KiB stack and calls `thorn_main()`.
+- **Terminal** writes to the VGA text buffer at `0xB8000`, maintains the
+  hardware cursor, and supports scrolling, newline, carriage return,
+  backspace, and tabs.
+- **Video** currently has a text-mode fallback. Graphics mode is deliberately
+  unavailable until a real-mode VBE setup path is implemented.
+- **Thorn Boot Protocol (TBP)** defines the kernel handoff registers and
+  boot-information structure. The handoff routine exists, but kernel loading
+  and invocation are not implemented.
 
-The boot image is currently a development skeleton. It does not yet load or start an operating-system kernel.
+The boot image is a development skeleton. It does not yet load or start an
+operating-system kernel. See [docs/architecture.md](docs/architecture.md) for
+the stage-by-stage design and implementation boundaries.
 
 ## Requirements
 
 Install the x86 build tools on a Debian or Ubuntu system:
 
 ```sh
-sudo apt install gcc binutils nasm make
+sudo apt install gcc binutils nasm make python3
 ```
+
+QEMU is optional and is only needed for emulator testing.
 
 ## Build
 
@@ -28,13 +42,11 @@ sudo apt install gcc binutils nasm make
 make
 ```
 
-The resulting BIOS disk image is:
+The resulting BIOS disk image is `build/boot-bios.img`.
 
-```text
-build/boot-bios.img
-```
-
-The image consists of one 512-byte boot sector followed by a 16 KiB Stage 2 area. Stage 1 reads exactly 32 sectors beginning at LBA 1, so Stage 2 must remain at or below 16 KiB.
+The image consists of one 512-byte boot sector followed by a 16 KiB Stage 2
+area. Stage 1 reads exactly 32 sectors beginning at LBA 1, so Stage 2 must
+remain at or below 16 KiB.
 
 Clean generated files with:
 
@@ -42,16 +54,60 @@ Clean generated files with:
 make clean
 ```
 
+## Host-side tests
+
+Run the Python standard-library test suite:
+
+```sh
+make test
+```
+
+The tests cover image-layout checks, ELF32 structural validation, and TBP
+metadata consistency. They do not emulate BIOS behavior.
+
+## Inspection tools
+
+Inspect the raw BIOS image:
+
+```sh
+python3 tools/inspect-image.py build/boot-bios.img
+```
+
+Emit JSON for scripts:
+
+```sh
+python3 tools/inspect-image.py --json build/boot-bios.img
+```
+
+Inspect the linked ELF32 file:
+
+```sh
+python3 tools/inspect-elf.py build/stage2.elf
+```
+
+The inspection utilities are host-side tools. The current BIOS loader reads a
+flat binary, not an ELF file.
+
 ## Test with QEMU
 
 ```sh
 qemu-system-i386 -drive format=raw,file=build/boot-bios.img
 ```
 
-## Thorn Boot Protocol
+The expected current behavior is to print the Stage 2 status messages and
+halt. Kernel loading is not implemented yet.
 
-See [docs/boot-protocol.md](docs/boot-protocol.md) for the current register contract, flags, and boot-information structure.
+## Documentation
+
+- [Architecture and execution flow](docs/architecture.md)
+- [Disk and memory layout](docs/disk-layout.md)
+- [Thorn Boot Protocol](docs/boot-protocol.md)
+- [ELF32 inspection utility](docs/elf32-tool.md)
+- [Testing and debugging](docs/testing.md)
 
 ## License
 
-No license has been declared in this repository yet. All rights are reserved by default until a license is added.
+Thorn is licensed under the GNU General Public License, version 2 or (at your
+option) any later version. See [LICENSE](LICENSE).
+
+SPDX-License-Identifier: GPL-2.0-or-later

@@ -11,6 +11,10 @@
 #define THORN_FLAG_BOOT_DRIVE  (1u << 2)
 #define THORN_FLAG_KERNEL      (1u << 3)
 
+/* Boot modes */
+#define THORN_MODE_TEXT     0x00000003
+#define THORN_MODE_GRAPHICS 0x00000007
+
 /* Thorn Boot Protocol information */
 struct thorn_boot_info
 {

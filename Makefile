@@ -1,11 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+
 CC      := gcc
 AS      := as
 NASM    := nasm
 LD      := ld
 OBJCOPY := objcopy
 
-CFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin -MMD -MP
+VERSION_MAJOR := 0
+VERSION_MINOR := 1
+VERSION_PATCH := 0
+
+VERSION := $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+
+CFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin -MMD -MP -Iinclude
 ASFLAGS := --32
 LDFLAGS := -m elf_i386
 
@@ -22,6 +29,7 @@ STAGE1      := build/stage1.bin
 STAGE2_ELF  := build/stage2.elf
 STAGE2      := build/stage2.bin
 BIOS_IMG    := build/boot-bios.img
+VER_HEADER  := include/generated/version.h
 
 .PHONY: all test clean
 
@@ -32,13 +40,29 @@ test:
 	@python3 -m unittest discover -s tests -v
 
 $(STAGE1): thorn-core/stage1.asm
-	@mkdir -p build
+	@mkdir -p $(dir $@)
 	@echo "  NASM    $<"
 	@$(NASM) -f bin $< -o $@
 	@test $$(stat -c%s $@) -eq 512
 
+$(VER_HEADER):
+	@mkdir -p $(dir $@)
+	@echo "  GEN     $@"
+	@printf '%s\n' \
+		'#ifndef VERSION_H' \
+		'#define VERSION_H' \
+		'' \
+		'#define THORN_VERSION "$(VERSION)"' \
+		'#define THORN_VERSION_MAJOR $(VERSION_MAJOR)' \
+		'#define THORN_VERSION_MINOR $(VERSION_MINOR)' \
+		'#define THORN_VERSION_PATCH $(VERSION_PATCH)' \
+		'' \
+		'#endif' > $@
+
+$(OBJ_C): $(VER_HEADER)
+
 $(STAGE2_ELF): $(OBJ) thorn-core/stage2.ld
-	@mkdir -p build
+	@mkdir -p $(dir $@)
 	@echo "  LD      $@"
 	@$(LD) $(LDFLAGS) -T thorn-core/stage2.ld $(OBJ) -o $@
 
@@ -73,4 +97,4 @@ $(BIOS_IMG): $(STAGE1) $(STAGE2)
 
 clean:
 	@echo "  CLEAN"
-	@rm -rf build $(OBJ) $(DEP)
+	@rm -rf build $(OBJ) $(DEP) $(VER_HEADER)

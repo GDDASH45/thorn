@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Host-side tests for Thorn's restricted ELF32 parser."""
 from __future__ import annotations
 

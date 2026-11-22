@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 CC      := gcc
 AS      := as
 NASM    := nasm
@@ -22,9 +23,13 @@ STAGE2_ELF  := build/stage2.elf
 STAGE2      := build/stage2.bin
 BIOS_IMG    := build/boot-bios.img
 
-.PHONY: all clean
+.PHONY: all test clean
 
 all: $(BIOS_IMG)
+
+test:
+	@echo "  TEST    host-side validation suite"
+	@python3 -m unittest discover -s tests -v
 
 $(STAGE1): thorn-core/stage1.asm
 	@mkdir -p build

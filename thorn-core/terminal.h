@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef THORN_TERMINAL_H
 #define THORN_TERMINAL_H
 

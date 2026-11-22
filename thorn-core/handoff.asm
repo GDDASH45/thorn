@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: GPL-2.0-or-later
 BITS 32
 
 section .text

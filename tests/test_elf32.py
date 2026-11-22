@@ -109,8 +109,9 @@ class ProgramHeaderTests(unittest.TestCase):
             parse_elf32(build_elf(filesz=12, memsz=8))
 
     def test_segment_file_range_must_fit_file(self) -> None:
+        data = build_elf(segment_offset=0x1FC, filesz=4)
         with self.assertRaisesRegex(ELFError, "out of bounds"):
-            parse_elf32(build_elf(segment_offset=0x400, filesz=4))
+            parse_elf32(data[:-1])
 
     def test_segment_memory_must_fit_32_bit_address_space(self) -> None:
         with self.assertRaisesRegex(ELFError, "overflow"):
@@ -146,7 +147,7 @@ class ReportTests(unittest.TestCase):
         self.assertIn("ELF32 i386 executable", report)
 
     def test_report_contains_entry_point(self) -> None:
-        report = describe_elf(parse_elf())
+        report = describe_elf(parse_elf32(build_elf()))
         self.assertIn("0x00100000", report)
 
     def test_report_contains_segment_permissions(self) -> None:

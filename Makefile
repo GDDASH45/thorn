@@ -9,8 +9,9 @@ OBJCOPY := objcopy
 VERSION_MAJOR := 0
 VERSION_MINOR := 1
 VERSION_PATCH := 0
+EXTRA_VERSION := -rc1
 
-VERSION := $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+VERSION := $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)$(EXTRA_VERSION)
 
 CFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin -MMD -MP -Iinclude
 ASFLAGS := --32

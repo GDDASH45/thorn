@@ -13,26 +13,41 @@ start:
     sti
     cld
 
+    ; Save the BIOS drive number before using any BIOS services.
     mov [boot_drive], dl
 
-    ; Load Stage 2 from LBA sector 1
+    ; Establish a known BIOS text mode before Stage 2 starts.
+    mov ax, 0x0003
+    int 0x10
+
+    ; Require INT 13h Extensions (EDD) before using the disk packet.
+    mov bx, 0x55AA
+    mov dl, [boot_drive]
+    mov ah, 0x41
+    int 0x13
+    jc disk_error
+    cmp bx, 0xAA55
+    jne disk_error
+    test cx, 1
+    jz disk_error
+
+    ; Load 32 sectors of Stage 2 from LBA 1 to physical 0x8000.
     mov si, disk_packet
     mov dl, [boot_drive]
     mov ah, 0x42
     int 0x13
     jc disk_error
 
-    ; Enable A20 through the fast A20 gate
+    ; Enable A20 through the fast A20 gate.
     in al, 0x92
     or al, 2
     and al, 0xFE
     out 0x92, al
 
-    ; Load the GDT
+    ; Load the GDT and enter 32-bit protected mode.
     cli
     lgdt [gdt_descriptor]
 
-    ; Enter protected mode
     mov eax, cr0
     or eax, 1
     mov cr0, eax
@@ -66,7 +81,7 @@ disk_packet:
     dw 0
     dq 1
 
-error_message db 'Thorn: Stage 2 loading failed!', 0
+error_message db 'Thorn: BIOS disk read failed or EDD is unavailable!', 0
 
 align 8
 

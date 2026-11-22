@@ -9,7 +9,7 @@ ASFLAGS := --32
 LDFLAGS := -m elf_i386
 
 SRC_C   := thorn-core/main.c
-SRC_AS  := thorn-core/early.asm
+SRC_AS  := thorn-core/early.asm thorn-core/handoff.asm
 
 OBJ_C   := $(SRC_C:.c=.o)
 OBJ_AS  := $(SRC_AS:.asm=.o)

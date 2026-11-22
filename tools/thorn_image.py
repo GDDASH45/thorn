@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 #!/usr/bin/env python3
 """Validation helpers for Thorn's raw BIOS disk image.
 

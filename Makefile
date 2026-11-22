@@ -54,15 +54,15 @@ $(STAGE1): thorn-core/stage1.asm
 $(VER_HEADER):
 	@mkdir -p $(dir $@)
 	@echo "  GEN     $@"
-	@printf '%s\\n' \\
-		'#ifndef VERSION_H' \\
-		'#define VERSION_H' \\
-		'' \\
-		'#define THORN_VERSION "$(VERSION)"' \\
-		'#define THORN_VERSION_MAJOR $(VERSION_MAJOR)' \\
-		'#define THORN_VERSION_MINOR $(VERSION_MINOR)' \\
-		'#define THORN_VERSION_PATCH $(VERSION_PATCH)' \\
-		'' \\
+	@printf '%s\n' \
+		'#ifndef VERSION_H' \
+		'#define VERSION_H' \
+		'' \
+		'#define THORN_VERSION "$(VERSION)"' \
+		'#define THORN_VERSION_MAJOR $(VERSION_MAJOR)' \
+		'#define THORN_VERSION_MINOR $(VERSION_MINOR)' \
+		'#define THORN_VERSION_PATCH $(VERSION_PATCH)' \
+		'' \
 		'#endif' > $@
 
 $(OBJ_C): $(VER_HEADER)

@@ -2,6 +2,7 @@ CC      := gcc
 AS      := as
 NASM    := nasm
 LD      := ld
+OBJCOPY := objcopy
 
 CFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector
 ASFLAGS := --32
@@ -16,18 +17,25 @@ OBJ     := $(OBJ_C) $(OBJ_AS)
 
 STAGE1  := build/stage1.bin
 STAGE2  := build/stage2.bin
+STAGE2_ELF := build/stage2.elf
 
 .PHONY: all clean
 
 all: $(STAGE1) $(STAGE2)
 
 $(STAGE1): thorn-core/stage1.asm
+	@mkdir -p build
 	@echo "  NASM    $<"
 	@$(NASM) -f bin $< -o $@
 
-$(STAGE2): $(OBJ)
+$(STAGE2_ELF): $(OBJ) thorn-core/stage2.ld
+	@mkdir -p build
 	@echo "  LD      $@"
 	@$(LD) $(LDFLAGS) -T thorn-core/stage2.ld $(OBJ) -o $@
+
+$(STAGE2): $(STAGE2_ELF)
+	@echo "  OBJCOPY $<"
+	@$(OBJCOPY) -O binary $< $@
 
 %.o: %.c
 	@echo "  CC      $<"

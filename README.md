@@ -103,7 +103,10 @@ halt. Kernel loading is not implemented yet.
 - [Disk and memory layout](docs/disk-layout.md)
 - [Thorn Boot Protocol](docs/boot-protocol.md)
 - [ELF32 inspection utility](docs/elf32-tool.md)
+- [TBP metadata validation](docs/bootinfo-validation.md)
 - [Testing and debugging](docs/testing.md)
+- [Contribution guidelines](docs/contributing.md)
+- [Roadmap](docs/roadmap.md)
 
 ## License
 

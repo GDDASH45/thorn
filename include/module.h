@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define THORN_MOD_MAGIC "THRNMOD\0"
+#define THORN_MOD_MAGIC "THRNMOD"
 #define THORN_MOD_VERSION 1u
 #define THORN_MOD_HEADER_SIZE 32u
 

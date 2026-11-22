@@ -1,0 +1,34 @@
+name: Thorn CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcc binutils nasm make python3
+
+      - name: Run host-side tests
+        run: make test
+
+      - name: Build BIOS image
+        run: |
+          make clean
+          make
+
+      - name: Inspect generated image
+        run: python3 tools/inspect-image.py build/boot-bios.img
+
+      - name: Inspect Stage 2 ELF
+        run: python3 tools/inspect-elf.py build/stage2.elf
